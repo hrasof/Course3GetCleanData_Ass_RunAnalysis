@@ -1,1 +1,0 @@
-This exercise covers the following: collecting, cleaning and working with a data set
