@@ -115,3 +115,11 @@ for (s in 1:numSubjects) {
 write.table(result, "Tidy2_datasetwithaverages.txt")    # row 180, col 68
 
 ##################################################################################################
+
+# Helpful for README
+# write.table will create listofnames.md in the current working directory
+
+data(result)
+datanames <- names(result)
+outputlines <- paste("* ",datanames , sep="")
+write.table(outputlines,file="listofvariables.md", quote = FALSE, col.names=FALSE, row.names=FALSE)
