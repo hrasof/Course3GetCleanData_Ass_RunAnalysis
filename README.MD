@@ -1,4 +1,9 @@
-Title
+HOW I CREATED the README.MD?
+- Create a new "R Markdown" in RStudio
+- Fill in the File and Save it in the Working Directory
+- Using Git Bash, 1) go to Working Dir using cd XXX (Important Step)
+                  2) git Add -A, git commit -m "myMessage", git Push
+- Check the GitHub (Remote Directory) --> It should show two files (Run_Analysis & README.MD)
 ========================================================
 
 #This is an R Markdown document. Markdown is a simple formatting syntax for authoring web pages (click the **Help** toolbar button for more details on using R Markdown).
