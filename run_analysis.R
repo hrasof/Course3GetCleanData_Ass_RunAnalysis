@@ -1,6 +1,5 @@
 # Source of data for the project:
 # https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip
-# This R script does the following:
 
 Init <- function(workDirStr = "C:/Users/hsofoian/Desktop/DataScience/Course 3 - Getting and Cleaning data/Course3_PeerAss_RunAnalysis"){
         setwd(workDirStr)      
@@ -12,17 +11,17 @@ Init()
 
 # 1. Merges the training and the test sets to create one data set.
 
-tmp1 <- read.table("train/X_train.txt")
-tmp2 <- read.table("test/X_test.txt")
-x <- rbind(tmp1, tmp2) ## 561 Columns, 10299 rows   ----> to be used with features.txt
+xtrain <- read.table("train/X_train.txt")
+xtest <- read.table("test/X_test.txt")
+xtt <- rbind(xtrain, xtest) ## 561 Columns, 10299 rows   ----> to be used with features.txt
 
-tmp1 <- read.table("train/y_train.txt")
-tmp2 <- read.table("test/y_test.txt")
-y <- rbind(tmp1, tmp2) ### 1 column, 10299 rows (1s,2s ... 6s)  ----> to be used with activity_labels.txt
+ytrain <- read.table("train/y_train.txt")
+ytest <- read.table("test/y_test.txt")
+ytt <- rbind(ytrain, ytest) ### 1 column, 10299 rows (1s,2s ... 6s)  ----> to be used with activity_labels.txt
 
-tmp1 <- read.table("train/subject_train.txt")
-tmp2 <- read.table("test/subject_test.txt")
-s <- rbind(tmp1, tmp2) ### 1 column, 10299 rows (incl 1s,2s ... 6s)
+strain <- read.table("train/subject_train.txt")
+stest <- read.table("test/subject_test.txt")
+stt <- rbind(strain, stest) ### 1 column, 10299 rows (incl 1s,2s ... 6s)
 
 
 ##################################################################################################
@@ -35,15 +34,15 @@ indices_of_good_features <- grep("-mean\\(\\)|-std\\(\\)", features[, 2])
 # Returns indices of mean&SD from featurees[,V2]
 # Example [1]   1   2   3   4   5   6  41  42  43  44 ...[66] 
 
-x <- x[, indices_of_good_features] ## select from X(Trani/Test) using indices related to mean/SD
-names(x) <- features[indices_of_good_features, 2]
-names(x) <- gsub("\\(|\\)", "", names(x))   ## replace "()" by empty using gsub
-names(x) <- tolower(names(x)) 
+xtt <- xtt[, indices_of_good_features] ## select from X(Trani/Test) using indices related to mean/SD
+names(xtt) <- features[indices_of_good_features, 2]
+names(xtt) <- gsub("\\(|\\)", "", names(xtt))   ## replace "()" by empty using gsub
+names(xtt) <- tolower(names(xtt)) 
 
-# Result of names(x): [1] "tbodyacc-mean-x" [2] "tbodyacc-mean-y" [3] "tbodyacc-mean-z"          
+# Result of names(xtt): [1] "tbodyacc-mean-x" [2] "tbodyacc-mean-y" [3] "tbodyacc-mean-z"          
 #                     [4] "tbodyacc-std-x" ..... [66] "fbodybodygyrojerkmag-std"
 
-# Result of x[1:2,1:2]:
+# Result of xtt[1:2,1:2]:
 ## tbodyacc-mean-x tbodyacc-mean-y
 ## 1       0.2885845     -0.02029417
 ## 2       0.2784188     -0.01641057
@@ -72,8 +71,8 @@ activities[, 2] = gsub("_", "", tolower(as.character(activities[, 2])))
 ## 5  5          standing
 ## 6  6            laying
 
-y[,1] = activities[y[,1], 2]
-names(y) <- "activity"
+ytt[,1] = activities[ytt[,1], 2]
+names(ytt) <- "activity"
 ## y[1:5,]
 ## [1] "standing" "standing" "standing"
 ## [4] "standing" "standing" .......
@@ -82,9 +81,9 @@ names(y) <- "activity"
 
 # 4. Appropriately labels the data set with descriptive activity names.
 
-names(s) <- "subject"
-cleaned <- cbind(s, y, x)
-write.table(cleaned, "Tidy1_mergedcleandata.txt") ## ## 68 Columns, 10299 rows
+names(stt) <- "subject"
+cleaned <- cbind(stt, ytt, xtt)
+write.table(cleaned, "Tidy1_mergedandcleandata.txt") ## ## 68 Columns, 10299 rows
 
 ## cleaned[1:3,1:5]
 ## subject activity       tbodyacc-mean-x   tbodyacc-mean-y      tbodyacc-mean-z
@@ -96,18 +95,18 @@ write.table(cleaned, "Tidy1_mergedcleandata.txt") ## ## 68 Columns, 10299 rows
 
 # 5. Creates a 2nd, independent tidy data set with the average of each variable for each activity and each subject.
 
-uniqueSubjects = unique(s)[,1]                         ## [1]  1  3  5 ... [30] 24
-numSubjects = length(unique(s)[,1])                    ## 30 
+uniqueSubjects = unique(stt)[,1]                         ## [1]  1  3  5 ... [30] 24
+numSubjects = length(unique(stt)[,1])                    ## 30 
 numActivities = length(activities[,1])                 ## 6 
 numCols = dim(cleaned)[2]                              ## 68
 result = cleaned[1:(numSubjects*numActivities), ]      ## 180 rows
 
 row = 1
-for (s in 1:numSubjects) {
+for (stt in 1:numSubjects) {
         for (a in 1:numActivities) {
-                result[row, 1] = uniqueSubjects[s]
+                result[row, 1] = uniqueSubjects[stt]
                 result[row, 2] = activities[a, 2]
-                tmp <- cleaned[cleaned$subject==s & cleaned$activity==activities[a, 2], ]
+                tmp <- cleaned[cleaned$subject==stt & cleaned$activity==activities[a, 2], ]
                 result[row, 3:numCols] <- colMeans(tmp[, 3:numCols])
                 row = row+1
         }
